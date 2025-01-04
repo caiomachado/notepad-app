@@ -1,12 +1,11 @@
-import { App, cert, getApp, getApps, initializeApp, ServiceAccount } from "firebase-admin/app";
+import { App, cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import serviceKey from './service_key.json';
 
 let app: App;
 
 if (getApps().length === 0) {
     app = initializeApp({
-        credential: cert(serviceKey as string | ServiceAccount),
+        credential: cert(JSON.parse(`${process.env.FIREBASE_ADMIN_CONFIG}`)),
     });
 } else {
     app = getApp();
