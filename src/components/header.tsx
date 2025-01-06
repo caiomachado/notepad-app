@@ -29,7 +29,7 @@ export function Header() {
                 </SignedIn>
 
                 <SignedOut>
-                    <SignInButton />
+                    <SignInButton mode="modal" />
                 </SignedOut>
             </div>
         </header>

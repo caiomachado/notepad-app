@@ -2,12 +2,12 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBGn5jGvhAnGsP3pSKRi45Ly3sLLCr5gTg",
-    authDomain: "notion-clone-1401c.firebaseapp.com",
-    projectId: "notion-clone-1401c",
-    storageBucket: "notion-clone-1401c.firebasestorage.app",
-    messagingSenderId: "41013535965",
-    appId: "1:41013535965:web:5074e4a8ed3a65d2fba734"
+    apiKey: process.env.FIREBASE_CONFIG_API_KEY,
+    authDomain: process.env.FIREBASE_CONFIG_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_CONFIG_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_CONFIG_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_CONFIG_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_CONFIG_APP_ID
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();

@@ -12,16 +12,24 @@ import { DeleteDocument } from "./delete-document";
 import { InviteUser } from "./invite-user";
 import { ManageUsers } from "./manage-users";
 import { Avatars } from "./avatars";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 type Props = {
     id: string;
 }
 
+const dotReplacement = '%2E';
+
 export function Document({ id }: Props) {
+    const { user } = useUser();
     const [data] = useDocumentData(doc(db, 'documents', id));
     const [inputValue, setInputValue] = useState('');
     const [isUpdating, startTransition] = useTransition();
     const isOwner = useOwner();
+    const router = useRouter();
+    const safeUserEmail = user?.emailAddresses[0]?.toString()?.replace(/\./g, dotReplacement) ?? '';
 
     function updateTitle(e: FormEvent) {
         e.preventDefault();
@@ -40,6 +48,13 @@ export function Document({ id }: Props) {
             setInputValue(data.title);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (data && !data?.roomUsers?.[safeUserEmail]) {
+            router.replace('/');
+            toast.error('You have been removed from the room');
+        }
+    }, [router, data, safeUserEmail])
 
     return (
         <div className="flex-1 h-full bg-white p-5">

@@ -3,6 +3,9 @@
 import { auth } from "@clerk/nextjs/server"
 import { adminDb } from "../firebase-admin";
 import { liveblocks } from "@/lib/liveblocks";
+import { FieldValue } from "firebase-admin/firestore";
+
+const dotReplacement = '%2E';
 
 export async function createNewDocument() {
     await auth.protect();
@@ -10,8 +13,10 @@ export async function createNewDocument() {
     const { sessionClaims } = await auth();
 
     const documentCollectionReference = adminDb.collection("documents");
+    const safeEmail = sessionClaims?.email?.replace(/\./g, dotReplacement) ?? '';
     const docRef = await documentCollectionReference.add({
-        title: "New Doc"
+        title: "New Doc",
+        roomUsers: { [safeEmail]: 'owner' }
     })
 
     await adminDb.collection('users').doc(sessionClaims?.email ?? '').collection('rooms').doc(docRef.id).set({
@@ -58,6 +63,11 @@ export async function inviteUserToDocument(roomId: string, email: string) {
             roomId,
         });
 
+        const safeEmail = email.replace(/\./g, dotReplacement);
+        await adminDb.collection('documents').doc(roomId).update({
+            [`roomUsers.${safeEmail}`]: 'editor'
+        })
+
         return { success: true }
     } catch (err) {
         console.log(err);
@@ -70,6 +80,10 @@ export async function removeUserFromDocument(roomId: string, email: string) {
 
     try {
         await adminDb.collection('users').doc(email).collection('rooms').doc(roomId).delete();
+        const safeEmail = email.replace(/\./g, dotReplacement);
+        await adminDb.collection('documents').doc(roomId).update({
+            [`roomUsers.${safeEmail}`]: FieldValue.delete()
+        })
 
         return { success: true }
     } catch (err) {
