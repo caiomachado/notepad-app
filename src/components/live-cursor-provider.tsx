@@ -26,6 +26,7 @@ export function LiveCursorProvider({ children }: PropsWithChildren) {
 
     return (
         <div
+            className="relative w-full h-full overflow-hidden"
             onPointerMove={handlePointerMove}
             onPointerLeave={handlePointerLeave}
         >
